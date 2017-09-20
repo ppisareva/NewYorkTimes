@@ -20,11 +20,21 @@ public class FilterParameters {
     int page;
     String sort;
 
+    public String getKayWord() {
+        return kayWord;
+    }
+
+    public void setKayWord(String kayWord) {
+        this.kayWord = kayWord;
+    }
+
+    String kayWord;
+
 
 
     public FilterParameters() {
         sortBy = "newest";
-        this.date = date;
+        date = getCurrentDate();
         art = true;
         fashion = true;
         sport = true;
@@ -35,6 +45,13 @@ public class FilterParameters {
         Date date = Calendar.getInstance().getTime();
         DateFormat df = new SimpleDateFormat("yyyyMMdd");
        return df.format(date);
+    }
+
+
+    public String getDesk() {
+        String result = "news_desk:(\"Sports\" \"Foreign\")";
+        result = result+ (art?"\"Arts\"":"" )+(fashion?"\"Fashion & Style\"":"")+(sport?"\"Sports\"":"");
+        return result;
     }
 
     public String getSort() {
@@ -92,4 +109,5 @@ public class FilterParameters {
     public void setSport(boolean sport) {
         this.sport = sport;
     }
+
 }

@@ -3,6 +3,7 @@ package polina.example.com.newyorktimes.util;
 import android.widget.DatePicker;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -27,4 +28,29 @@ public class Utils {
         return dateResult;
     }
 
+    private static Date getDate(String date){
+
+        DateFormat df = new SimpleDateFormat("yyyyMMdd");
+        try {
+           return df.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    public static int getYear(String date){
+        DateFormat df = new SimpleDateFormat("yyyy");
+        return Integer.parseInt(df.format(getDate(date)));
+
+    }public static int getMonth(String date){
+        DateFormat df = new SimpleDateFormat("MM");
+        return Integer.parseInt(df.format(getDate(date)));
+
+    }public static int getDay(String date){
+        DateFormat df = new SimpleDateFormat("dd");
+        return Integer.parseInt(df.format(getDate(date)));
+
+    }
 }

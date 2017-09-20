@@ -17,6 +17,6 @@ public interface TimesNewsService {
     public static final String BASE_URL = "https://api.nytimes.com/svc/";
 
     @GET("search/v2/articlesearch.json")
-    Call<TimesResponse> getNews(@Query("page") int page, @Query("q") String search, @Query("sort") String sort, @Query("begin_date") String data);
+    Call<TimesResponse> getNews(@Query("page") int page, @Query("q") String search, @Query("sort") String sort, @Query("begin_date") String data, @Query("fq") String news_desk);
 
 }

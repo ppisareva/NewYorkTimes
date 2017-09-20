@@ -8,4 +8,9 @@
     <string name="fashion_amp_style"><![CDATA[Fashion & Style]]></string>
     <string name="arts">Arts</string>
     <string name="submit">Submit</string>
+    <string name="at_least_one_must_be_selected">*at least one must be selected</string>
+    <string-array name="sort_array">
+        <item>newest</item>
+        <item>oldest</item>
+    </string-array>
 </resources>
