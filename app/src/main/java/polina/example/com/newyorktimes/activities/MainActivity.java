@@ -17,6 +17,10 @@ import android.widget.ImageView;
 
 import polina.example.com.newyorktimes.R;
 import polina.example.com.newyorktimes.model.FilterParameters;
+import polina.example.com.newyorktimes.model.TimesResponse;
+import polina.example.com.newyorktimes.networks.Networks;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class MainActivity extends AppCompatActivity {
   final FilterParameters filterParameters = new FilterParameters();
@@ -28,6 +32,22 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        Call<TimesResponse> response = Networks.getService().getNews(filterParameters.getPage(), "a", filterParameters.getSort(), filterParameters.getCurrentDate());
+        response.enqueue(new Callback<TimesResponse>() {
+            @Override
+            public void onResponse(Call<TimesResponse> call, retrofit2.Response<TimesResponse> response) {
+                System.err.println("response.body().status = " + response.body().status);
+                System.err.println("response.body().response.docs = " + response.body().response.docs);
+            }
+
+            @Override
+            public void onFailure(Call<TimesResponse> call, Throwable t) {
+                System.err.println("=============================================");
+                t.printStackTrace();
+            }
+        });
     }
 
 
