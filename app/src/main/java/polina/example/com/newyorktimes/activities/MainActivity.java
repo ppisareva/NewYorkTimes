@@ -21,8 +21,6 @@ import polina.example.com.newyorktimes.model.FilterParameters;
 public class MainActivity extends AppCompatActivity {
   final FilterParameters filterParameters = new FilterParameters();
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
