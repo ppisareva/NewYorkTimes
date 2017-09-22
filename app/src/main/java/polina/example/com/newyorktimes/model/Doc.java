@@ -8,24 +8,24 @@ import java.util.Collection;
  * Created by polina on 9/19/17.
  */
 
-class Doc {
+public class Doc {
     @SerializedName("_id")
     public String id;
 
-    public String uri;
+    public String web_url;
     public String pub_date;
     public String snippet;
     public Headline headline;
     public String new_desk;
 
-    class Headline {
-        String main;
+   public class Headline {
+        public String main;
 
     }
 
 
     public class Multimedia {
-        String url;
+       public String url;
     }
 
     public Collection<Multimedia> multimedia;
@@ -35,7 +35,7 @@ class Doc {
     public String toString() {
         return "Doc{" +
                 "id='" + id + '\'' +
-                ", uri='" + uri + '\'' +
+                ", uri='" + web_url + '\'' +
                 ", pub_date='" + pub_date + '\'' +
                 ", snippet='" + snippet + '\'' +
                 ", headline=" + headline +

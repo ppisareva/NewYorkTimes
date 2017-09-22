@@ -1,6 +1,11 @@
 package polina.example.com.newyorktimes.networks;
 
+import android.widget.ArrayAdapter;
+
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -8,6 +13,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import polina.example.com.newyorktimes.BuildConfig;
+import polina.example.com.newyorktimes.adapter.NewsAdapter;
+import polina.example.com.newyorktimes.model.FilterParameters;
+import polina.example.com.newyorktimes.model.New;
+import polina.example.com.newyorktimes.model.TimesResponse;
+import polina.example.com.newyorktimes.util.Utils;
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -33,7 +45,10 @@ public class Networks {
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+
         return retrofit.create(TimesNewsService.class);
     }
+
+
 
 }

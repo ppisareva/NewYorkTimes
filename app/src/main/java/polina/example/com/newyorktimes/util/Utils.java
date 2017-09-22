@@ -5,8 +5,15 @@ import android.widget.DatePicker;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+
+import polina.example.com.newyorktimes.model.Doc;
+import polina.example.com.newyorktimes.model.New;
+import polina.example.com.newyorktimes.model.TimesResponse;
+import retrofit2.Response;
 
 /**
  * Created by polina on 9/19/17.
@@ -52,5 +59,25 @@ public class Utils {
         DateFormat df = new SimpleDateFormat("dd");
         return Integer.parseInt(df.format(getDate(date)));
 
+    }
+
+    public static List<New> parseResponse(Response<TimesResponse> response) {
+        List<New> result = new ArrayList<>();
+
+            System.err.println("response.body().status = " + response.body().status);
+            System.err.println("response.body().response.docs = " + response.body().response.docs);
+            List<Doc> doc = (List<Doc>) response.body().response.docs;
+            for (int i = 0; i < doc.size(); i++) {
+                Doc d = doc.get(i);
+                List<Doc.Multimedia> m = (List<Doc.Multimedia>) d.multimedia;
+                String url = "";
+                if (m.size() > 0) {
+                    url = "http://www.nytimes.com" + m.get(0).url;
+                }
+                New newItem = new New(d.headline.main, d.snippet, url, d.web_url, d.new_desk);
+                result.add(newItem);
+            }
+
+        return result;
     }
 }

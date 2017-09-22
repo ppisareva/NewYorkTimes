@@ -7,6 +7,7 @@ import polina.example.com.newyorktimes.model.TimesResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 
 
 /**
@@ -16,7 +17,7 @@ import retrofit2.http.Query;
 public interface TimesNewsService {
     public static final String BASE_URL = "https://api.nytimes.com/svc/";
 
-    @GET("search/v2/articlesearch.json")
-    Call<TimesResponse> getNews(@Query("page") int page, @Query("q") String search, @Query("sort") String sort, @Query("begin_date") String data, @Query("fq") String news_desk);
+    @GET("search/v2/articlesearch.json?")
+    Call<TimesResponse> getNews(  @Query("page") int page, @QueryMap(encoded = true) Map<String, String> options);
 
 }

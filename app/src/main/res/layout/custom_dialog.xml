@@ -38,19 +38,4 @@
         android:checked="true"
         android:text="Sports" />
 
-    <TextView
-        android:id="@+id/warning"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_red_dark"
-        android:textStyle="italic"
-        android:visibility="gone"
-        android:text="@string/at_least_one_must_be_selected" />
-
-    <Button
-        android:id="@+id/btnSubmit"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/submit" />
 </LinearLayout>

@@ -1,9 +1,13 @@
 package polina.example.com.newyorktimes.activities;
 
 import android.app.Dialog;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.os.Bundle;
 import android.view.Menu;
@@ -16,24 +20,37 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import polina.example.com.newyorktimes.R;
+import polina.example.com.newyorktimes.adapter.NewsAdapter;
+import polina.example.com.newyorktimes.dialog.FilterDialog;
+import polina.example.com.newyorktimes.listeners.EndlessScrollListener;
+import polina.example.com.newyorktimes.listeners.OnDialogActionListener;
+import polina.example.com.newyorktimes.model.Doc;
 import polina.example.com.newyorktimes.model.FilterParameters;
+import polina.example.com.newyorktimes.model.New;
 import polina.example.com.newyorktimes.model.TimesResponse;
 import polina.example.com.newyorktimes.networks.Networks;
 import polina.example.com.newyorktimes.util.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
 
-import static android.R.attr.y;
-import static junit.runner.Version.id;
-
-public class MainActivity extends AppCompatActivity {
-  final FilterParameters filterParameters = new FilterParameters();
+public class MainActivity extends AppCompatActivity implements OnDialogActionListener{
+  private FilterParameters filterParameters;
+    List<New> news = new ArrayList<>();
+    NewsAdapter adapter;
+    int spinnerTag =0;
+    boolean resetFilter = false;
+    private EndlessScrollListener scrollListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,20 +59,45 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        filterParameters = new FilterParameters();
         spinnerInit();
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rvNews);
+        recyclerView.setHasFixedSize(true);
+        StaggeredGridLayoutManager gaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, 1);
+        recyclerView.setLayoutManager(gaggeredGridLayoutManager);
+        adapter = new NewsAdapter(news, this);
+        recyclerView.setAdapter(adapter);
+
+        scrollListener = new EndlessScrollListener(gaggeredGridLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                startServiceRequest(filterParameters);
+
+            }
+        };
+        recyclerView.addOnScrollListener(scrollListener);
     }
 
     private void spinnerInit() {
         Spinner spinner = (Spinner) findViewById(R.id.spnSort);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.sort_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        final ArrayAdapter<CharSequence> adapterSpinner = ArrayAdapter.createFromResource(this,
+                R.array.sort_array, R.layout.simple_spinner_item);
+        adapterSpinner.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapterSpinner);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
                 filterParameters.setSort(adapterView.getItemAtPosition(pos).toString());
-                if(filterParameters.getKayWord()!=null) startServiceRequest();
+                filterParameters.setPage(0);
+                resetFilter = true;
+                if(spinnerTag!=pos){
+                    startServiceRequest(filterParameters);
+                    spinnerTag = pos;
+                }
+
+
 
             }
 
@@ -66,13 +108,36 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void startServiceRequest(){
-        Call<TimesResponse> response = Networks.getService().getNews(filterParameters.getPage(), filterParameters.getKayWord(), filterParameters.getSort(), filterParameters.getCurrentDate(), filterParameters.getDesk());
+
+    public void startServiceRequest(final FilterParameters filterParameters){
+        //@Query("page") int page, @Query("q") String search, @Query("sort") String sort, @Query("begin_date") String data, @Query("fq") String news_desk
+        Map<String, String> data = new HashMap<>();
+        if(filterParameters.getKayWord()!=null) data.put("q", filterParameters.getKayWord());
+        if(filterParameters.getDate()!=null) data.put("begin_date", filterParameters.getDate());
+        if(filterParameters.isChecked()) data.put("fq", filterParameters.getDesk());
+        if(filterParameters.getSort()!=null) data.put("sort", filterParameters.getSort());
+
+        Call<TimesResponse> response = Networks.getService().getNews(filterParameters.getPage(), data);
         response.enqueue(new Callback<TimesResponse>() {
             @Override
             public void onResponse(Call<TimesResponse> call, retrofit2.Response<TimesResponse> response) {
-                System.err.println("response.body().status = " + response.body().status);
-                System.err.println("response.body().response.docs = " + response.body().response.docs);
+               if(resetFilter){
+                   news.clear();
+                   adapter.notifyDataSetChanged();
+                   filterParameters.setPage(1);
+                   news.addAll(Utils.parseResponse(response));
+                   adapter.notifyDataSetChanged();
+                   resetFilter = false;
+               } else {
+                   filterParameters.setPage(filterParameters.nextPage());
+                   news.addAll(Utils.parseResponse(response));
+                   adapter.notifyDataSetChanged();
+               }
+
+
+
+
+
             }
 
             @Override
@@ -83,48 +148,33 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     public void onFilter(View view) {
-        final Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.custom_dialog);
-        dialog.setTitle(getString(R.string.filter));
-        Button mSubmit = (Button) dialog.findViewById(R.id.btnSubmit);
-        final DatePicker mDatePicker = (DatePicker) dialog.findViewById(R.id.dpNews);
-        initDatePicker(mDatePicker);
-        final CheckBox mCheckArt = (CheckBox) dialog.findViewById(R.id.cbArt);
-        mCheckArt.setChecked(filterParameters.isArt());
-        final CheckBox mCheckFashion = (CheckBox) dialog.findViewById(R.id.cbFashion);
-        mCheckFashion.setChecked(filterParameters.isFashion());
-        final CheckBox mCheckSport = (CheckBox) dialog.findViewById(R.id.cbSport);
-        mCheckSport.setChecked(filterParameters.isSport());
-        mSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mCheckArt.isChecked()||mCheckFashion.isChecked()||mCheckSport.isChecked()){
-                    ((TextView) dialog.findViewById(R.id.warning)).setVisibility(View.GONE);
-                    filterParameters.setArt(mCheckArt.isChecked());
-                    filterParameters.setFashion(mCheckFashion.isChecked());
-                    filterParameters.setSport(mCheckSport.isChecked());
-                    filterParameters.setDate(Utils.getDateFromDatePicker(mDatePicker));
-                    if(filterParameters.getKayWord()!=null) startServiceRequest();
-                    dialog.cancel();
-                } else {
-                    ((TextView) dialog.findViewById(R.id.warning)).setVisibility(View.VISIBLE);
-                }
+        FilterDialog dialog = FilterDialog.newInstance(filterParameters);
+        dialog.show(getSupportFragmentManager(), "fragment_filter");
 
 
-            }
-        });
-        dialog.show();
     }
 
-    private void initDatePicker(DatePicker mDatePicker) {
-        mDatePicker.setMaxDate(System.currentTimeMillis());
-        int year = Utils.getYear(filterParameters.getDate());
-        int month = Utils.getMonth(filterParameters.getDate());
-        int day = Utils.getDay(filterParameters.getDate());
-        mDatePicker.updateDate(year, month, day);
+
+
+    @Override
+    public void onDialogPositiveClick(FilterParameters filter) {
+        resetFilter = true;
+        filterParameters.setSport(filter.isSport());
+        filterParameters.setFashion(filter.isFashion());
+        filterParameters.setArt(filter.isArt());
+        filterParameters.setDate(filter.getDate());
+        filterParameters.setPage(0);
+       startServiceRequest(filterParameters);
+
     }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        dialog.getDialog().cancel();
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -140,10 +190,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 filterParameters.setKayWord(query);
-                startServiceRequest();
+                startServiceRequest(filterParameters);
+                resetFilter = true;
                 searchView.clearFocus();
-
-
                 return true;
             }
 

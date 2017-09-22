@@ -6,4 +6,9 @@
     <dimen name="appbar_padding_top">8dp</dimen>
     <dimen name="sort_text_margin_left">14dp</dimen>
     <dimen name="sort_margin_right">14dp</dimen>
+    <dimen name="card_view_margin">7dp</dimen>
+    <dimen name="image_view_width">175dp</dimen>
+    <dimen name="image_view_height">175dp</dimen>
+    <dimen name="description_margin_top">7dp</dimen>
+    <dimen name="title_margin_top">7dp</dimen>
 </resources>

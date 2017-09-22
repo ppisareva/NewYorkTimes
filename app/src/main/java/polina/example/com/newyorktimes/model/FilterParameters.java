@@ -12,7 +12,6 @@ import java.util.Map;
  */
 
 public class FilterParameters {
-    String sortBy;
     String date;
     boolean art;
     boolean fashion;
@@ -33,12 +32,8 @@ public class FilterParameters {
 
 
     public FilterParameters() {
-        sortBy = "newest";
-        date = getCurrentDate();
-        art = true;
-        fashion = true;
-        sport = true;
         page = 0;
+
     }
 
     public String getCurrentDate(){
@@ -49,8 +44,9 @@ public class FilterParameters {
 
 
     public String getDesk() {
-        String result = "news_desk:(\"Sports\" \"Foreign\")";
-        result = result+ (art?"\"Arts\"":"" )+(fashion?"\"Fashion & Style\"":"")+(sport?"\"Sports\"":"");
+        String result = "news_desk:(";
+        result = result+ (art?"\"Arts\"":"" )+(fashion?"\"Fashion & Style\"":"")+(sport?"\"Sports\"":"") +")";
+        System.err.println(result);
         return result;
     }
 
@@ -68,14 +64,6 @@ public class FilterParameters {
 
     public void setPage(int page) {
         this.page = page;
-    }
-
-    public String getSortBy() {
-        return sortBy;
-    }
-
-    public void setSortBy(String sortBy) {
-        this.sortBy = sortBy;
     }
 
     public String getDate() {
@@ -110,4 +98,11 @@ public class FilterParameters {
         this.sport = sport;
     }
 
+    public boolean isChecked() {
+        return art||sport||fashion;
+    }
+
+    public int nextPage() {
+        return page+1;
+    }
 }
