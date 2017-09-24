@@ -9,6 +9,9 @@
     <string name="arts">Arts</string>
     <string name="submit">Submit</string>
     <string name="at_least_one_must_be_selected">*at least one must be selected</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="failed_to_connect_to_server">Failed to connect to server</string>
+    <string name="nothing_selected">Nothing selected</string>
     <string-array name="sort_array">
         <item>newest</item>
         <item>oldest</item>

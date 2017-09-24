@@ -1,7 +1,11 @@
 package polina.example.com.newyorktimes.util;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.widget.DatePicker;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -61,18 +65,34 @@ public class Utils {
 
     }
 
+    public static Boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+    public static boolean isOnline() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int     exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        } catch (IOException e)          { e.printStackTrace(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+        return false;
+    }
+
     public static List<New> parseResponse(Response<TimesResponse> response) {
         List<New> result = new ArrayList<>();
-
-            System.err.println("response.body().status = " + response.body().status);
-            System.err.println("response.body().response.docs = " + response.body().response.docs);
+            if (!response.isSuccessful()) return new ArrayList<>();
             List<Doc> doc = (List<Doc>) response.body().response.docs;
             for (int i = 0; i < doc.size(); i++) {
                 Doc d = doc.get(i);
                 List<Doc.Multimedia> m = (List<Doc.Multimedia>) d.multimedia;
                 String url = "";
                 if (m.size() > 0) {
-                    url = "http://www.nytimes.com" + m.get(0).url;
+                    url = "http://www.nytimes.com/" + m.get(0).url;
                 }
                 New newItem = new New(d.headline.main, d.snippet, url, d.web_url, d.new_desk);
                 result.add(newItem);

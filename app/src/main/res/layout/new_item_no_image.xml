@@ -9,11 +9,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/card_view_margin">
 
-        <ImageView
-            android:id="@+id/ivNew"
-            android:layout_width="@dimen/image_view_width"
-            android:layout_height="@dimen/image_view_height"
-            />
 
         <TextView
             android:id="@+id/tvTitle"
@@ -39,7 +34,6 @@
             android:layout_marginBottom="@dimen/description_margin_top"
             android:text="TextView"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
-
 
 
     </RelativeLayout>

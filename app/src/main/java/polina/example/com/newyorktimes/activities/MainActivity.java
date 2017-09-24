@@ -1,41 +1,34 @@
 package polina.example.com.newyorktimes.activities;
 
-import android.app.Dialog;
+import android.databinding.DataBindingUtil;
+import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import polina.example.com.newyorktimes.R;
 import polina.example.com.newyorktimes.adapter.NewsAdapter;
+import polina.example.com.newyorktimes.databinding.ActivityMainBinding;
 import polina.example.com.newyorktimes.dialog.FilterDialog;
 import polina.example.com.newyorktimes.listeners.EndlessScrollListener;
 import polina.example.com.newyorktimes.listeners.OnDialogActionListener;
-import polina.example.com.newyorktimes.model.Doc;
 import polina.example.com.newyorktimes.model.FilterParameters;
 import polina.example.com.newyorktimes.model.New;
 import polina.example.com.newyorktimes.model.TimesResponse;
@@ -45,43 +38,54 @@ import retrofit2.Call;
 import retrofit2.Callback;
 
 public class MainActivity extends AppCompatActivity implements OnDialogActionListener{
-  private FilterParameters filterParameters;
-    List<New> news = new ArrayList<>();
-    NewsAdapter adapter;
-    int spinnerTag =0;
-    boolean resetFilter = false;
+    private FilterParameters filterParameters;
+    private List<New> news = new ArrayList<>();
+    private NewsAdapter adapter;
+    private int spinnerTag =0;
+    private boolean resetFilter = false;
     private EndlessScrollListener scrollListener;
+    private ActivityMainBinding binding;
+    public static final String KEY_WORD = "q";
+    public static final String START_DATE = "begin_date";
+    public static final String ADVANCED_SORT = "fq";
+    public static final String SORT = "sort";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         filterParameters = new FilterParameters();
+        initToolbar();
         spinnerInit();
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rvNews);
+        initRecycleView();
+    }
+
+
+
+    private void initRecycleView() {
+        RecyclerView recyclerView = binding.rvNews;
         recyclerView.setHasFixedSize(true);
         StaggeredGridLayoutManager gaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, 1);
         recyclerView.setLayoutManager(gaggeredGridLayoutManager);
         adapter = new NewsAdapter(news, this);
         recyclerView.setAdapter(adapter);
-
         scrollListener = new EndlessScrollListener(gaggeredGridLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to the bottom of the list
                 startServiceRequest(filterParameters);
-
             }
         };
-        recyclerView.addOnScrollListener(scrollListener);
+    }
+
+    private void initToolbar() {
+        Toolbar toolbar = binding.toolbar;
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void spinnerInit() {
-        Spinner spinner = (Spinner) findViewById(R.id.spnSort);
+        Spinner spinner = binding.spnSort;
         final ArrayAdapter<CharSequence> adapterSpinner = ArrayAdapter.createFromResource(this,
                 R.array.sort_array, R.layout.simple_spinner_item);
         adapterSpinner.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
@@ -103,50 +107,56 @@ public class MainActivity extends AppCompatActivity implements OnDialogActionLis
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
+                Toast.makeText(MainActivity.this, getString(R.string.nothing_selected), Toast.LENGTH_LONG);
             }
         });
     }
 
 
     public void startServiceRequest(final FilterParameters filterParameters){
-        //@Query("page") int page, @Query("q") String search, @Query("sort") String sort, @Query("begin_date") String data, @Query("fq") String news_desk
-        Map<String, String> data = new HashMap<>();
-        if(filterParameters.getKayWord()!=null) data.put("q", filterParameters.getKayWord());
-        if(filterParameters.getDate()!=null) data.put("begin_date", filterParameters.getDate());
-        if(filterParameters.isChecked()) data.put("fq", filterParameters.getDesk());
-        if(filterParameters.getSort()!=null) data.put("sort", filterParameters.getSort());
 
-        Call<TimesResponse> response = Networks.getService().getNews(filterParameters.getPage(), data);
-        response.enqueue(new Callback<TimesResponse>() {
-            @Override
-            public void onResponse(Call<TimesResponse> call, retrofit2.Response<TimesResponse> response) {
-               if(resetFilter){
-                   news.clear();
-                   adapter.notifyDataSetChanged();
-                   filterParameters.setPage(1);
-                   news.addAll(Utils.parseResponse(response));
-                   adapter.notifyDataSetChanged();
-                   resetFilter = false;
-               } else {
-                   filterParameters.setPage(filterParameters.nextPage());
-                   news.addAll(Utils.parseResponse(response));
-                   adapter.notifyDataSetChanged();
-               }
+        if(Utils.isNetworkAvailable(this)&&Utils.isOnline()) {
+            Map<String, String> data = new HashMap<>();
+            if (filterParameters.getKayWord() != null) data.put(KEY_WORD, filterParameters.getKayWord());
+            if (filterParameters.getDate() != null)
+                data.put(START_DATE, filterParameters.getDate());
+            if (filterParameters.isChecked()) data.put(ADVANCED_SORT, filterParameters.getDesk());
+            if (filterParameters.getSort() != null) data.put(SORT, filterParameters.getSort());
+
+            Call<TimesResponse> response = Networks.getService().getNews(filterParameters.getPage(), data);
+            response.enqueue(new Callback<TimesResponse>() {
+                @Override
+                public void onResponse(Call<TimesResponse> call, retrofit2.Response<TimesResponse> response) {
+                    if (resetFilter) {
+                        news.clear();
+                        adapter.notifyDataSetChanged();
+                        filterParameters.setPage(1);
+                        news.addAll(Utils.parseResponse(response));
+                        adapter.notifyDataSetChanged();
+                        scrollListener.resetState();
+                        resetFilter = false;
+                    } else {
+                        filterParameters.setPage(filterParameters.nextPage());
+                        news.addAll(Utils.parseResponse(response));
+                        adapter.notifyDataSetChanged();
+                    }
 
 
+                }
 
+                @Override
+                public void onFailure(Call<TimesResponse> call, Throwable t) {
+                   Toast.makeText(MainActivity.this, getString(R.string.failed_to_connect_to_server), Toast.LENGTH_LONG);
+                    t.printStackTrace();
+                }
+            });
 
-
-            }
-
-            @Override
-            public void onFailure(Call<TimesResponse> call, Throwable t) {
-                System.err.println("=============================================");
-                t.printStackTrace();
-            }
-        });
+        }else {
+            Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_LONG);
+        }
     }
+
+
 
     public void onFilter(View view) {
         FilterDialog dialog = FilterDialog.newInstance(filterParameters);

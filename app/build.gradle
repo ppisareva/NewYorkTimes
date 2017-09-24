@@ -6,6 +6,7 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 android {
     compileSdkVersion 26
     buildToolsVersion "25.0.2"
+    dataBinding.enabled = true
     defaultConfig {
         applicationId "polina.example.com.newyorktimes"
         minSdkVersion 16
@@ -36,6 +37,8 @@ dependencies {
     compile 'com.android.support:design:26.+'
     compile 'com.android.support:recyclerview-v7:26.+'
     compile 'com.google.code.gson:gson:2.7'
+    compile 'com.android.support:support-vector-drawable:26.+'
+    compile 'com.android.support:animated-vector-drawable:26.+'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.github.bumptech.glide:glide:3.8.0'

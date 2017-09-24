@@ -18,16 +18,15 @@ import polina.example.com.newyorktimes.R;
 import polina.example.com.newyorktimes.activities.WebViewerActivity;
 import polina.example.com.newyorktimes.model.New;
 
-import static android.os.Build.VERSION_CODES.N;
-import static java.security.AccessController.getContext;
-
 /**
  * Created by polina on 9/21/17.
  */
 
-public class NewsAdapter  extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
+public class NewsAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     List<New> news;
     Context context;
+    public static final int FULL = 1;
+    public static final int SHORT = 0;
 
     public NewsAdapter(List<New> news, Context context) {
         this.news = news;
@@ -35,31 +34,57 @@ public class NewsAdapter  extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View bookView = inflater.inflate(R.layout.new_item, parent, false);
-        NewsAdapter.ViewHolder viewHolder = new NewsAdapter.ViewHolder(bookView);
-        return viewHolder;
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        RecyclerView.ViewHolder viewHolder;
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        switch (viewType) {
+            case FULL:
+                View v = inflater.inflate(R.layout.new_item, parent, false);
+                viewHolder = new ViewHolder(v);
+                return viewHolder;
+            case SHORT:
+                View vNoImage = inflater.inflate(R.layout.new_item_no_image, parent, false);
+                viewHolder = new ViewHolderNoImage(vNoImage);
+                return viewHolder;
+        }
+      return null;
+
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        New newItem = news.get(position);
-        holder.setNew(newItem);
-        holder.tvTitle.setText(newItem.getTitle());
-        holder.tvDescription.setText(newItem.getDescription());
-        if(newItem.getDesk()!=null&&!newItem.getDesk().equals("None")) {
-            holder.tvDesk.setVisibility(View.VISIBLE);
-            holder.tvDesk.setText(newItem.getDesk());
-        } else {
-            holder.tvDesk.setVisibility(View.GONE);
+    public int getItemViewType(int position) {
+        if (news.get(position).getImageURL()==null||news.get(position).getImageURL().isEmpty()) {
+            return SHORT;
+        } else if (news.get(position).getImageURL()instanceof String) {
+            return FULL;
         }
-        Glide.with(context)
+        return -1;
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        New newItem = news.get(position);
+        switch (viewHolder.getItemViewType()) {
+            case FULL:
+                ViewHolder holder = (ViewHolder) viewHolder;
+                holder.setNew(newItem);
+                holder.tvTitle.setText(newItem.getTitle());
+                holder.tvDescription.setText(newItem.getDescription());
+                Glide.with(context)
                 .load(Uri.parse(newItem.getImageURL()))
                 .placeholder(android.R.drawable.alert_dark_frame)
                 .into(holder.ivCover);
+                break;
+            case SHORT:
+                ViewHolderNoImage holderNoImage = (ViewHolderNoImage) viewHolder;
+                holderNoImage.setNew(newItem);
+                holderNoImage.tvTitle.setText(newItem.getTitle());
+                holderNoImage.tvDescription.setText(newItem.getDescription());
+                break;
+        }
+
     }
+
 
     @Override
     public int getItemCount() {
@@ -70,7 +95,6 @@ public class NewsAdapter  extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         public ImageView ivCover;
         public TextView tvTitle;
         public TextView tvDescription;
-        private TextView tvDesk;
         New newItem;
 
 
@@ -80,9 +104,35 @@ public class NewsAdapter  extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
            ivCover = (ImageView) itemView.findViewById(R.id.ivNew);
            tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
            tvDescription = (TextView) itemView.findViewById(R.id.tvDescription);
-           tvDesk = (TextView) itemView.findViewById(R.id.tvDesk);
 
        }
+
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(context, WebViewerActivity.class);
+            intent.putExtra("url", newItem.getWebUrl());
+            context.startActivity(intent);
+
+        }
+
+        public void setNew(New aNew) {
+            newItem = aNew;
+        }
+    }
+
+    class ViewHolderNoImage extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public TextView tvTitle;
+        public TextView tvDescription;
+        New newItem;
+
+
+        public ViewHolderNoImage(View itemView) {
+            super(itemView);
+            itemView.setOnClickListener(this);
+            tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
+            tvDescription = (TextView) itemView.findViewById(R.id.tvDescription);
+
+        }
 
         @Override
         public void onClick(View view) {

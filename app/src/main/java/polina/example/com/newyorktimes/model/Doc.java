@@ -26,6 +26,11 @@ public class Doc {
 
     public class Multimedia {
        public String url;
+
+        @Override
+        public String toString() {
+            return url;
+        }
     }
 
     public Collection<Multimedia> multimedia;
