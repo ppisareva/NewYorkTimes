@@ -25,6 +25,7 @@ import retrofit2.Response;
 
 public class Utils {
 
+    public static final String URL = "url";
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
     public static String getDateFromDatePicker(DatePicker datePicker){

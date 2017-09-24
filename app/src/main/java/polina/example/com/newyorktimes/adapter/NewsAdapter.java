@@ -1,10 +1,15 @@
 package polina.example.com.newyorktimes.adapter;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +23,6 @@ import java.util.List;
 
 import polina.example.com.newyorktimes.BR;
 import polina.example.com.newyorktimes.R;
-import polina.example.com.newyorktimes.activities.WebViewerActivity;
 import polina.example.com.newyorktimes.databinding.NewItemNoImageBinding;
 import polina.example.com.newyorktimes.model.New;
 
@@ -31,6 +35,7 @@ public class NewsAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     Context context;
     public static final int FULL = 1;
     public static final int SHORT = 0;
+    private int requestCode =1102123;
 
     public NewsAdapter(List<New> news, Context context) {
         this.news = news;
@@ -120,10 +125,7 @@ public class NewsAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         @Override
         public void onClick(View view) {
-            Intent intent = new Intent(context, WebViewerActivity.class);
-            intent.putExtra("url", newItem.getWebUrl());
-            context.startActivity(intent);
-
+            openChrome(newItem);
         }
 
         public void setNew(New aNew) {
@@ -152,15 +154,29 @@ public class NewsAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         @Override
         public void onClick(View view) {
-            Intent intent = new Intent(context, WebViewerActivity.class);
-            intent.putExtra("url", newItem.getWebUrl());
-            context.startActivity(intent);
+           openChrome(newItem);
 
         }
 
         public void setNew(New aNew) {
             newItem = aNew;
         }
+    }
+
+    private void openChrome(New newItem){
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        builder.setToolbarColor(ContextCompat.getColor(context, R.color.colorAccent));
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_action_name);
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, newItem.getWebUrl());
+        PendingIntent pendingIntent = PendingIntent.getActivity(context,
+                requestCode,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setActionButton(bitmap, context.getString(R.string.share), pendingIntent, true);
+        CustomTabsIntent customTabsIntent = builder.build();
+        customTabsIntent.launchUrl(context, Uri.parse(newItem.getWebUrl()));
     }
 
 }

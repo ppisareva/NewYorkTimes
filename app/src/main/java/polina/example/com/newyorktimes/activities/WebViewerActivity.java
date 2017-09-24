@@ -15,6 +15,7 @@ import android.webkit.WebView;
 import polina.example.com.newyorktimes.R;
 import polina.example.com.newyorktimes.databinding.ActivityWebViewerBinding;
 import polina.example.com.newyorktimes.networks.MyBrowser;
+import polina.example.com.newyorktimes.util.Utils;
 
 import static polina.example.com.newyorktimes.R.id.miShare;
 
@@ -30,25 +31,20 @@ public class WebViewerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_web_viewer);
-        url = getIntent().getStringExtra("url");
+        url = getIntent().getStringExtra(Utils.URL);
         System.err.println(url);
         Toolbar toolbar = binding.toolbarWeb;
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         myWebView = binding.wvArticle;
-        // Configure related browser settings
         myWebView.getSettings().setLoadsImagesAutomatically(true);
         myWebView.getSettings().setJavaScriptEnabled(true);
         myWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-        // Configure the client to use when opening URLs
         myWebView.setWebViewClient(new MyBrowser());
-        // Load the initial URL
         myWebView.loadUrl(url);
         init(url);
-
     }
 
     private void init(String url){
