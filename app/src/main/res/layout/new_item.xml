@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v7.widget.CardView
+    <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    card_view:cardCornerRadius="2dp"
+    android:layout_margin="@dimen/card_view_margin"
     android:layout_width="wrap_content" android:layout_height="wrap_content">
 
     <RelativeLayout
@@ -11,6 +14,7 @@
 
         <ImageView
             android:id="@+id/ivNew"
+            android:scaleType="fitXY"
             android:layout_width="@dimen/image_view_width"
             android:layout_height="@dimen/image_view_height"
             />
@@ -25,7 +29,6 @@
             android:layout_alignRight="@+id/ivNew"
             android:layout_marginTop="@dimen/title_margin_top"
             android:layout_below="@+id/ivNew"
-            android:text="TextView"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
         <TextView
@@ -37,7 +40,6 @@
             android:layout_below="@+id/tvTitle"
             android:layout_marginTop="@dimen/description_margin_top"
             android:layout_marginBottom="@dimen/description_margin_top"
-            android:text="TextView"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
 

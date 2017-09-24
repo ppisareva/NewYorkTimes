@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogActionLis
         RecyclerView recyclerView = binding.rvNews;
         recyclerView.setHasFixedSize(true);
         StaggeredGridLayoutManager gaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, 1);
+        gaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
         recyclerView.setLayoutManager(gaggeredGridLayoutManager);
         adapter = new NewsAdapter(news, this);
         recyclerView.setAdapter(adapter);
@@ -76,6 +78,8 @@ public class MainActivity extends AppCompatActivity implements OnDialogActionLis
                 startServiceRequest(filterParameters);
             }
         };
+        recyclerView.addOnScrollListener(scrollListener);
+        startServiceRequest(filterParameters);
     }
 
     private void initToolbar() {
@@ -117,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogActionLis
 
         if(Utils.isNetworkAvailable(this)&&Utils.isOnline()) {
             Map<String, String> data = new HashMap<>();
-            if (filterParameters.getKayWord() != null) data.put(KEY_WORD, filterParameters.getKayWord());
+            if (!TextUtils.isEmpty(filterParameters.getKayWord())) data.put(KEY_WORD, filterParameters.getKayWord());
             if (filterParameters.getDate() != null)
                 data.put(START_DATE, filterParameters.getDate());
             if (filterParameters.isChecked()) data.put(ADVANCED_SORT, filterParameters.getDesk());

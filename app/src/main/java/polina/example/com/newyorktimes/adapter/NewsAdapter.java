@@ -70,10 +70,16 @@ public class NewsAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 holder.setNew(newItem);
                 holder.tvTitle.setText(newItem.getTitle());
                 holder.tvDescription.setText(newItem.getDescription());
+                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.ivCover.getLayoutParams();
+                int h = params.height;
+                params.width = context.getResources().getDimensionPixelSize(R.dimen.image_view_width);
+                params.height = params.width * newItem.getHeight() / newItem.getWidth();
+                if (Math.abs(params.height - h) > 1) {
+                    holder.ivCover.setLayoutParams(params);
+                }
                 Glide.with(context)
-                .load(Uri.parse(newItem.getImageURL()))
-                .placeholder(android.R.drawable.alert_dark_frame)
-                .into(holder.ivCover);
+                    .load(Uri.parse(newItem.getImageURL()))
+                    .into(holder.ivCover);
                 break;
             case SHORT:
                 ViewHolderNoImage holderNoImage = (ViewHolderNoImage) viewHolder;
@@ -92,6 +98,7 @@ public class NewsAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
         public ImageView ivCover;
         public TextView tvTitle;
         public TextView tvDescription;
@@ -118,6 +125,8 @@ public class NewsAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         public void setNew(New aNew) {
             newItem = aNew;
         }
+
+
     }
 
     class ViewHolderNoImage extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -146,4 +155,5 @@ public class NewsAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             newItem = aNew;
         }
     }
+
 }

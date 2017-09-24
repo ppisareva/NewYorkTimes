@@ -85,7 +85,10 @@ public class Utils {
 
     public static List<New> parseResponse(Response<TimesResponse> response) {
         List<New> result = new ArrayList<>();
-            if (!response.isSuccessful()) return new ArrayList<>();
+            if (!response.isSuccessful()) {
+                System.err.println("Ooops.. " + response.message());
+                return new ArrayList<>();
+            }
             List<Doc> doc = (List<Doc>) response.body().response.docs;
             for (int i = 0; i < doc.size(); i++) {
                 Doc d = doc.get(i);
@@ -95,6 +98,9 @@ public class Utils {
                     url = "http://www.nytimes.com/" + m.get(0).url;
                 }
                 New newItem = new New(d.headline.main, d.snippet, url, d.web_url, d.new_desk);
+                if (!m.isEmpty()) {
+                    newItem.setSize(m.get(0).width, m.get(0).height);
+                }
                 result.add(newItem);
             }
 

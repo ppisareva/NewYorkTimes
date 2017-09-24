@@ -8,6 +8,8 @@ public class New {
     String title;
     String description;
     String imageURL;
+    int width;
+    int height;
 
     public String getDesk() {
         return desk;
@@ -26,6 +28,11 @@ public class New {
         this.imageURL = imageURL;
         this.webUrl = webUrl;
         this.desk = desk;
+    }
+
+    public void setSize(int w, int h) {
+        width = w;
+        height = h;
     }
 
     public String getTitle() {
@@ -58,5 +65,13 @@ public class New {
 
     public void setWebUrl(String webUrl) {
         this.webUrl = webUrl;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }
