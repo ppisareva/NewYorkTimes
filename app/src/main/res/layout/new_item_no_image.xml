@@ -2,6 +2,9 @@
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable name="newItem" type="polina.example.com.newyorktimes.model.New" />
+    </data>
 
 
 <android.support.v7.widget.CardView
@@ -25,7 +28,7 @@
             android:layout_alignRight="@+id/ivNew"
             android:layout_marginTop="@dimen/title_margin_top"
             android:layout_below="@+id/ivNew"
-            android:text="TextView"
+            android:text="@{newItem.title}"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
         <TextView
@@ -37,7 +40,7 @@
             android:layout_below="@+id/tvTitle"
             android:layout_marginTop="@dimen/description_margin_top"
             android:layout_marginBottom="@dimen/description_margin_top"
-            android:text="TextView"
+            android:text="@{newItem.description}"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
 

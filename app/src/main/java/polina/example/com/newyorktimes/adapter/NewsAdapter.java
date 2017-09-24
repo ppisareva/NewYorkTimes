@@ -2,6 +2,8 @@ package polina.example.com.newyorktimes.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,8 +16,10 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+import polina.example.com.newyorktimes.BR;
 import polina.example.com.newyorktimes.R;
 import polina.example.com.newyorktimes.activities.WebViewerActivity;
+import polina.example.com.newyorktimes.databinding.NewItemNoImageBinding;
 import polina.example.com.newyorktimes.model.New;
 
 /**
@@ -84,8 +88,8 @@ public class NewsAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             case SHORT:
                 ViewHolderNoImage holderNoImage = (ViewHolderNoImage) viewHolder;
                 holderNoImage.setNew(newItem);
-                holderNoImage.tvTitle.setText(newItem.getTitle());
-                holderNoImage.tvDescription.setText(newItem.getDescription());
+                holderNoImage.getBinding().setVariable(BR.newItem, newItem);
+                holderNoImage.getBinding().executePendingBindings();
                 break;
         }
 
@@ -130,17 +134,20 @@ public class NewsAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     class ViewHolderNoImage extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public TextView tvTitle;
-        public TextView tvDescription;
+
         New newItem;
+        private NewItemNoImageBinding binding;
 
 
         public ViewHolderNoImage(View itemView) {
             super(itemView);
-            itemView.setOnClickListener(this);
-            tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
-            tvDescription = (TextView) itemView.findViewById(R.id.tvDescription);
+            binding = DataBindingUtil.bind(itemView);
+            binding.getRoot().setOnClickListener(this);
 
+        }
+
+        public ViewDataBinding getBinding() {
+            return binding;
         }
 
         @Override
