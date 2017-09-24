@@ -3,5 +3,6 @@
     style="@style/spinner_style"
     android:maxLines="1"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="45dp"
+    android:gravity="center"
     />
