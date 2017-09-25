@@ -40,6 +40,7 @@ The following **bonus** features are implemented:
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
+
 +![alt text](https://github.com/ppisareva/NewYorkTimes/blob/master/case-1-share.gif)
 
 +![alt text](https://github.com/ppisareva/NewYorkTimes/blob/master/case-2-filter-chrome.gif)
