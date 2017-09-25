@@ -40,8 +40,9 @@ The following **bonus** features are implemented:
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
++![alt text](https://github.com/ppisareva/NewYorkTimes/blob/master/case-1-share.gif)
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
++![alt text](https://github.com/ppisareva/NewYorkTimes/blob/master/case-2-filter-chrome.gif)
 
 GIF created with Android Studio
 
@@ -51,12 +52,12 @@ Most chalaging for me was to implement Retrofit
 
 ## Open-source libraries used
 
-- Retrifit
+- Retrofit
 - Glide
 
 ## License
 
-    Copyright [yyyy] [name of copyright owner]
+    Copyright 2017 Polina Sliusarchuk
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
