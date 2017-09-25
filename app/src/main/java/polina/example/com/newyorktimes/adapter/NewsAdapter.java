@@ -106,7 +106,7 @@ public class NewsAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         return news.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView ivCover;
         public TextView tvTitle;
@@ -116,17 +116,12 @@ public class NewsAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
        public ViewHolder(View itemView) {
            super(itemView);
-           itemView.setOnClickListener(this);
            ivCover = (ImageView) itemView.findViewById(R.id.ivNew);
            tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
            tvDescription = (TextView) itemView.findViewById(R.id.tvDescription);
-
+           itemView.setOnClickListener(e -> openChrome(newItem));
        }
 
-        @Override
-        public void onClick(View view) {
-            openChrome(newItem);
-        }
 
         public void setNew(New aNew) {
             newItem = aNew;
@@ -135,7 +130,7 @@ public class NewsAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     }
 
-    class ViewHolderNoImage extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ViewHolderNoImage extends RecyclerView.ViewHolder {
 
         New newItem;
         private NewItemNoImageBinding binding;
@@ -144,18 +139,11 @@ public class NewsAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         public ViewHolderNoImage(View itemView) {
             super(itemView);
             binding = DataBindingUtil.bind(itemView);
-            binding.getRoot().setOnClickListener(this);
-
+            itemView.setOnClickListener(e -> openChrome(newItem));
         }
 
         public ViewDataBinding getBinding() {
             return binding;
-        }
-
-        @Override
-        public void onClick(View view) {
-           openChrome(newItem);
-
         }
 
         public void setNew(New aNew) {
