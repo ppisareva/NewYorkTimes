@@ -96,11 +96,11 @@ public class Utils {
                 List<Doc.Multimedia> m = (List<Doc.Multimedia>) d.multimedia;
                 String url = "";
                 if (m.size() > 0) {
-                    url = "http://www.nytimes.com/" + m.get(0).url;
+                    url = "http://www.nytimes.com/" + m.get(m.size()-2).url;
                 }
                 New newItem = new New(d.headline.main, d.snippet, url, d.web_url, d.new_desk);
                 if (!m.isEmpty()) {
-                    newItem.setSize(m.get(0).width, m.get(0).height);
+                    newItem.setSize(m.get(m.size()-2).width, m.get(m.size()-2).height);
                 }
                 result.add(newItem);
             }

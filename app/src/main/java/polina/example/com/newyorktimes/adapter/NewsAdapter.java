@@ -165,7 +165,7 @@ public class NewsAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private void openChrome(New newItem){
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        builder.setToolbarColor(ContextCompat.getColor(context, R.color.colorAccent));
+        builder.setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary));
         Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_action_name);
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
